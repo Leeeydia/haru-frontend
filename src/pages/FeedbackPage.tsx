@@ -29,7 +29,6 @@ export default function FeedbackPage() {
 
   useEffect(() => {
     if (!answerId) return;
-    setLoading(true);
     getFeedbackAPI(Number(answerId))
       .then((res) => {
         if (res.success && res.data) {
