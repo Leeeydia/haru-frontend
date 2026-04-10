@@ -37,6 +37,16 @@ export async function getQuestionByTokenAPI(token: string) {
 }
 
 // TODO: 백엔드 완성 시 실제 API로 교체
+export async function getMyAnswersAPI() {
+  try {
+    const res = await client.get<ApiResponse<Answer[]>>('/api/answers/my');
+    return res.data;
+  } catch {
+    return { success: true, data: [] as Answer[], message: '목업 데이터' } as ApiResponse<Answer[]>;
+  }
+}
+
+// TODO: 백엔드 완성 시 실제 API로 교체
 export async function submitAnswerAPI(data: AnswerSubmitRequest) {
   try {
     const res = await client.post<ApiResponse<Answer>>('/api/answers', data);
