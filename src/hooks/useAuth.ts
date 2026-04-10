@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { signupAPI, loginAPI } from '../api/auth';
+import { getProfileAPI } from '../api/profile';
 import type { SignupRequest, LoginRequest } from '../types';
 import axios from 'axios';
 
@@ -40,7 +41,16 @@ export function useAuth() {
       const res = await loginAPI(data);
       if (res.data.success && res.data.data) {
         contextLogin(res.data.data);
-        navigate(returnUrl || '/dashboard');
+        try {
+          const profileRes = await getProfileAPI();
+          if (profileRes.data.success && profileRes.data.data) {
+            navigate(returnUrl || '/dashboard');
+          } else {
+            navigate('/onboarding');
+          }
+        } catch {
+          navigate('/onboarding');
+        }
       } else {
         setError(res.data.message || '로그인에 실패했습니다.');
       }
