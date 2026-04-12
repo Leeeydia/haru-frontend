@@ -36,7 +36,7 @@ function Heatmap({ dailyActivities }: { dailyActivities: DailyActivity[] }) {
   for (let i = 0; i < totalDays; i++) {
     const d = new Date(startDate);
     d.setDate(startDate.getDate() + i);
-    const key = d.toISOString().slice(0, 10);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const count = activityMap.get(key) ?? 0;
 
     if (d.getDay() === 0 && currentWeek.length > 0) {
