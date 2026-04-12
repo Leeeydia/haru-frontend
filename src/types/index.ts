@@ -115,6 +115,13 @@ export interface QuestionDelivery {
   answered: boolean;
 }
 
+// GitHub 연동
+export interface GitHubStatus {
+  connected: boolean;
+  username: string | null;
+  repo: string | null;
+}
+
 // API 공통
 export interface ApiResponse<T> {
   success: boolean;
