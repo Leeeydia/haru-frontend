@@ -4,8 +4,8 @@ import type { ApiResponse, GitHubStatus } from '../types';
 // TODO: 백엔드 완성 시 실제 API로 교체
 const MOCK_GITHUB_STATUS: GitHubStatus = {
   connected: false,
-  username: null,
-  repo: null,
+  githubUsername: null,
+  githubRepo: null,
 };
 
 export async function getGitHubStatusAPI(): Promise<ApiResponse<GitHubStatus>> {

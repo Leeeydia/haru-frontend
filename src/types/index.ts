@@ -120,8 +120,8 @@ export interface QuestionDelivery {
 // GitHub 연동
 export interface GitHubStatus {
   connected: boolean;
-  username: string | null;
-  repo: string | null;
+  githubUsername: string | null;
+  githubRepo: string | null;
 }
 
 // 오답 노트
