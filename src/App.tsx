@@ -12,6 +12,7 @@ import HistoryPage from './pages/my/HistoryPage';
 import WrongNotesPage from './pages/my/WrongNotesPage';
 import StatsPage from './pages/my/StatsPage';
 import SettingsPage from './pages/SettingsPage';
+import GitHubCallbackPage from './pages/GitHubCallbackPage';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
 
         {/* 인증 필요 페이지 */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/github/callback" element={<GitHubCallbackPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/feedback/:answerId" element={<FeedbackPage />} />
