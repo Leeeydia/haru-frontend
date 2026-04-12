@@ -37,6 +37,9 @@ export default function FeedbackPage() {
           setError('피드백을 불러올 수 없습니다.');
         }
       })
+      .catch(() => {
+        setError('서버에 연결할 수 없습니다.');
+      })
       .finally(() => setLoading(false));
   }, [answerId]);
 
@@ -91,7 +94,7 @@ export default function FeedbackPage() {
         {showAnswer && (
           <div className="px-6 pb-6 border-t border-gray-100 pt-4">
             <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-              (제출한 답변이 여기에 표시됩니다.)
+              {feedback.answerContent}
             </p>
           </div>
         )}
@@ -142,7 +145,7 @@ export default function FeedbackPage() {
       {/* 하단 버튼 */}
       <div className="flex gap-3">
         <Link
-          to={`/answer/retry`}
+          to={`/answer/${feedback.answerToken}`}
           className="flex-1 text-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg px-6 py-3 font-medium transition-colors"
         >
           다시 작성하기

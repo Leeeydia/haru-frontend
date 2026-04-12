@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { getQuestionByTokenAPI, submitAnswerAPI } from '../api/answer';
-import type { Question } from '../types';
+import type { QuestionDetail } from '../types';
 
 export default function AnswerPage() {
   const { answerToken } = useParams<{ answerToken: string }>();
@@ -10,7 +10,7 @@ export default function AnswerPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [question, setQuestion] = useState<Question | null>(null);
+  const [question, setQuestion] = useState<QuestionDetail | null>(null);
   const [content, setContent] = useState('');
   const [loadingQuestion, setLoadingQuestion] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -28,6 +28,9 @@ export default function AnswerPage() {
           setError('질문을 불러올 수 없습니다.');
         }
       })
+      .catch(() => {
+        setError('서버에 연결할 수 없습니다.');
+      })
       .finally(() => setLoadingQuestion(false));
   }, [answerToken]);
 
@@ -43,11 +46,13 @@ export default function AnswerPage() {
       return;
     }
 
+    if (!question) return;
+
     setError(null);
     setSubmitting(true);
     setSaved(false);
     try {
-      const res = await submitAnswerAPI({ deliveryId: 1, content, isFinal });
+      const res = await submitAnswerAPI({ deliveryId: question.deliveryId, content, isFinal });
       if (res.success && res.data) {
         if (isFinal) {
           navigate(`/feedback/${res.data.id}`);
@@ -76,7 +81,7 @@ export default function AnswerPage() {
   if (!question) {
     return (
       <div className="max-w-3xl mx-auto py-16 px-4 text-center">
-        <p className="text-gray-500">질문을 찾을 수 없습니다.</p>
+        <p className="text-gray-500">{error || '질문을 찾을 수 없습니다.'}</p>
       </div>
     );
   }

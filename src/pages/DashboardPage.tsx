@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { getMyAnswersAPI } from '../api/answer';
-import type { Answer } from '../types';
-import { formatDate } from '../utils/format';
+import type { AnswerHistory } from '../types';
+import { formatDate, getScoreColor } from '../utils/format';
 
 export default function DashboardPage() {
   const { user } = useAuthContext();
-  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [answers, setAnswers] = useState<AnswerHistory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,14 +27,23 @@ export default function DashboardPage() {
     weekday: 'long',
   });
 
-  const totalAnswers = answers.filter((a) => a.isFinal).length;
+  const finalAnswers = answers.filter((a) => a.isFinal);
+  const totalAnswers = finalAnswers.length;
   const recentAnswers = answers.slice(0, 5);
+
+  // 평균 점수 계산
+  const avgScore = (() => {
+    const scored = finalAnswers.filter((a) => a.score !== null);
+    if (scored.length === 0) return null;
+    const sum = scored.reduce((acc, a) => acc + (a.score ?? 0), 0);
+    return Math.round(sum / scored.length);
+  })();
 
   // 연속 답변일 계산
   const streakDays = (() => {
-    if (answers.length === 0) return 0;
+    if (finalAnswers.length === 0) return 0;
     const dates = [...new Set(
-      answers.filter((a) => a.isFinal).map((a) => a.submittedAt.slice(0, 10)),
+      finalAnswers.map((a) => a.submittedAt.slice(0, 10)),
     )].sort().reverse();
     if (dates.length === 0) return 0;
 
@@ -54,7 +63,7 @@ export default function DashboardPage() {
 
   const stats = [
     { label: '총 답변 수', value: totalAnswers > 0 ? `${totalAnswers}개` : '0개' },
-    { label: '평균 점수', value: '-' },
+    { label: '평균 점수', value: avgScore !== null ? `${avgScore}점` : '-' },
     { label: '연속 답변일', value: streakDays > 0 ? `${streakDays}일` : '0일' },
   ];
 
@@ -113,26 +122,38 @@ export default function DashboardPage() {
             {recentAnswers.map((answer) => (
               <Link
                 key={answer.id}
-                to={`/feedback/${answer.id}`}
+                to={answer.isFinal ? `/feedback/${answer.id}` : `/answer/${answer.answerToken}`}
                 className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
               >
                 <div className="min-w-0">
                   <p className="text-gray-900 truncate">
-                    {answer.content.slice(0, 40) || '(내용 없음)'}
+                    {answer.questionContent?.slice(0, 50) || '(질문 없음)'}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {formatDate(answer.submittedAt)}
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="bg-indigo-50 text-indigo-900 text-xs font-medium px-2 py-0.5 rounded-full">
+                      {answer.category}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {formatDate(answer.submittedAt)}
+                    </span>
+                  </div>
                 </div>
-                <span
-                  className={`ml-4 text-xs font-medium px-3 py-1 rounded-full ${
-                    answer.isFinal
-                      ? 'bg-emerald-50 text-emerald-600'
-                      : 'bg-amber-50 text-amber-600'
-                  }`}
-                >
-                  {answer.isFinal ? '제출완료' : '임시저장'}
-                </span>
+                <div className="flex items-center gap-3 ml-4 shrink-0">
+                  {answer.score !== null && (
+                    <span className={`text-sm font-bold ${getScoreColor(answer.score)}`}>
+                      {answer.score}점
+                    </span>
+                  )}
+                  <span
+                    className={`text-xs font-medium px-3 py-1 rounded-full ${
+                      answer.isFinal
+                        ? 'bg-emerald-50 text-emerald-600'
+                        : 'bg-amber-50 text-amber-600'
+                    }`}
+                  >
+                    {answer.isFinal ? '제출완료' : '임시저장'}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>

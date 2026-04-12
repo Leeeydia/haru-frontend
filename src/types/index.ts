@@ -47,8 +47,34 @@ export interface Question {
   createdAt: string;
 }
 
+// 질문 상세 (GET /api/answers/question?token= 응답)
+export interface QuestionDetail extends Question {
+  deliveryId: number;
+}
+
 // 답변
 export interface Answer {
+  id: number;
+  userId: number;
+  questionId: number;
+  deliveryId: number;
+  questionContent: string;
+  category: string;
+  content: string;
+  version: number;
+  isFinal: boolean;
+  submittedAt: string;
+  feedbackId: number | null;
+}
+
+export interface AnswerSubmitRequest {
+  deliveryId: number;
+  content: string;
+  isFinal: boolean;
+}
+
+// 답변 이력 (GET /api/answers/my 응답)
+export interface AnswerHistory {
   id: number;
   userId: number;
   questionId: number;
@@ -57,12 +83,11 @@ export interface Answer {
   version: number;
   isFinal: boolean;
   submittedAt: string;
-}
-
-export interface AnswerSubmitRequest {
-  deliveryId: number;
-  content: string;
-  isFinal: boolean;
+  questionContent: string;
+  category: string;
+  difficulty: string;
+  score: number | null;
+  answerToken: string;
 }
 
 // 피드백
@@ -76,6 +101,8 @@ export interface Feedback {
   specificity: string;
   improvedAnswer: string;
   createdAt: string;
+  answerContent: string;
+  answerToken: string;
 }
 
 // 질문 발송
