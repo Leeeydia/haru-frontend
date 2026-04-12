@@ -132,6 +132,7 @@ export default function SettingsPage() {
         <h2 className="text-lg font-bold text-gray-900 mb-2">GitHub 연동</h2>
         <p className="text-sm text-gray-500 mb-5">
           GitHub를 연동하면 면접 답변과 AI 피드백이 자동으로 커밋되어 잔디에 반영됩니다.
+          답변을 제출하면 GitHub 레포의 README.md가 자동으로 업데이트됩니다.
         </p>
 
         {github?.connected ? (
