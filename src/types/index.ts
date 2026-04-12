@@ -137,6 +137,37 @@ export interface WrongNote {
   totalScore: number | null;
 }
 
+// 성장 통계
+export interface CategoryStat {
+  category: string;
+  answerCount: number;
+  averageScore: number;
+}
+
+export interface DailyActivity {
+  date: string;
+  count: number;
+}
+
+export interface WeeklyTrend {
+  weekStart: string;
+  category: string;
+  averageScore: number;
+}
+
+export interface StatsResponse {
+  totalAnswerCount: number;
+  averageScore: number;
+  recentAverageScore: number;
+  currentStreak: number;
+  maxStreak: number;
+  categoryStats: CategoryStat[];
+  strongestCategory: string | null;
+  weakestCategory: string | null;
+  dailyActivities: DailyActivity[];
+  weeklyTrends: WeeklyTrend[];
+}
+
 // API 공통
 export interface ApiResponse<T> {
   success: boolean;
