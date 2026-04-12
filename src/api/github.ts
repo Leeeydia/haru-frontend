@@ -18,9 +18,9 @@ export async function getGitHubStatusAPI(): Promise<ApiResponse<GitHubStatus>> {
   }
 }
 
-export async function connectGitHubAPI(): Promise<ApiResponse<{ authorizeUrl: string }>> {
+export async function connectGitHubAPI(): Promise<ApiResponse<{ authUrl: string }>> {
   try {
-    const res = await client.post<ApiResponse<{ authorizeUrl: string }>>('/api/github/connect');
+    const res = await client.post<ApiResponse<{ authUrl: string }>>('/api/github/connect');
     return res.data;
   } catch {
     // TODO: 백엔드 완성 시 실제 API로 교체
@@ -32,9 +32,9 @@ export async function connectGitHubAPI(): Promise<ApiResponse<{ authorizeUrl: st
   }
 }
 
-export async function callbackGitHubAPI(code: string): Promise<ApiResponse<GitHubStatus>> {
+export async function callbackGitHubAPI(code: string): Promise<ApiResponse<null>> {
   try {
-    const res = await client.post<ApiResponse<GitHubStatus>>('/api/github/callback', { code });
+    const res = await client.post<ApiResponse<null>>('/api/github/callback', { code });
     return res.data;
   } catch {
     // TODO: 백엔드 완성 시 실제 API로 교체

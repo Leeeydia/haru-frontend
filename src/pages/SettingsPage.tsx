@@ -69,7 +69,7 @@ export default function SettingsPage() {
     try {
       const res = await connectGitHubAPI();
       if (res.success && res.data) {
-        window.location.href = res.data.authorizeUrl;
+        window.location.href = res.data.authUrl;
       } else {
         setGithubMessage(res.message || 'GitHub 연동에 실패했습니다.');
       }
