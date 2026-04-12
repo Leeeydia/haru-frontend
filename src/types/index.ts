@@ -26,6 +26,7 @@ export interface UserProfile {
   receiveTime: number;
   dailyQuestionCount: number;
   receiveDays: string;
+  reminderEnabled: boolean;
 }
 
 export interface ProfileRequest {
@@ -34,6 +35,7 @@ export interface ProfileRequest {
   receiveTime: number;
   dailyQuestionCount: number;
   receiveDays: string;
+  reminderEnabled: boolean;
 }
 
 // 질문

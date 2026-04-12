@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const [receiveTime, setReceiveTime] = useState(9);
   const [dailyQuestionCount, setDailyQuestionCount] = useState(1);
   const [receiveDays, setReceiveDays] = useState('EVERYDAY');
+  const [reminderEnabled, setReminderEnabled] = useState(true);
 
   useEffect(() => {
     Promise.all([
@@ -28,6 +29,7 @@ export default function SettingsPage() {
           setReceiveTime(p.receiveTime);
           setDailyQuestionCount(p.dailyQuestionCount);
           setReceiveDays(p.receiveDays);
+          setReminderEnabled(p.reminderEnabled ?? true);
         }
       }),
       getGitHubStatusAPI().then((res) => {
@@ -49,6 +51,7 @@ export default function SettingsPage() {
         receiveTime,
         dailyQuestionCount,
         receiveDays,
+        reminderEnabled,
       });
       if (res.data.success) {
         setSaveMessage('설정이 저장되었습니다.');
@@ -183,6 +186,49 @@ export default function SettingsPage() {
             {githubMessage}
           </p>
         )}
+      </section>
+
+      {/* 미답변 리마인더 */}
+      <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">미답변 리마인더</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              답변하지 않은 질문이 있으면 리마인더 이메일을 보내드립니다.
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={reminderEnabled}
+            onClick={async () => {
+              if (!profile) return;
+              const next = !reminderEnabled;
+              setReminderEnabled(next);
+              try {
+                await saveProfileAPI({
+                  jobCategory: profile.jobCategory,
+                  techStacks: profile.techStacks,
+                  receiveTime,
+                  dailyQuestionCount,
+                  receiveDays,
+                  reminderEnabled: next,
+                });
+              } catch {
+                setReminderEnabled(!next);
+              }
+            }}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              reminderEnabled ? 'bg-indigo-900' : 'bg-gray-300'
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                reminderEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
       </section>
 
       {/* 질문 수신 설정 */}

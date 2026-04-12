@@ -43,7 +43,7 @@ export default function OnboardingPage() {
     setError(null);
     setLoading(true);
     try {
-      const res = await saveProfileAPI({ jobCategory, techStacks, receiveTime, dailyQuestionCount, receiveDays });
+      const res = await saveProfileAPI({ jobCategory, techStacks, receiveTime, dailyQuestionCount, receiveDays, reminderEnabled: true });
       if (res.data.success) {
         navigate('/dashboard');
       } else {
