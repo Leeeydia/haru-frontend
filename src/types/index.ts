@@ -122,6 +122,21 @@ export interface GitHubStatus {
   repo: string | null;
 }
 
+// 오답 노트
+export interface WrongNote {
+  id: number;
+  answerId: number;
+  addedType: 'MANUAL' | 'AUTO';
+  resolved: boolean;
+  resolvedAt: string | null;
+  createdAt: string;
+  questionId: number;
+  questionContent: string;
+  category: string;
+  difficulty: string;
+  totalScore: number | null;
+}
+
 // API 공통
 export interface ApiResponse<T> {
   success: boolean;

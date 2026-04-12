@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getFeedbackAPI } from '../api/feedback';
+import { addWrongNoteAPI } from '../api/wrongNote';
 import { getScoreGrade, getScoreColor } from '../utils/format';
 import type { Feedback } from '../types';
 
@@ -26,6 +27,8 @@ export default function FeedbackPage() {
     expression: true,
     specificity: true,
   });
+  const [wrongNoteAdding, setWrongNoteAdding] = useState(false);
+  const [wrongNoteMessage, setWrongNoteMessage] = useState('');
 
   useEffect(() => {
     if (!answerId) return;
@@ -45,6 +48,25 @@ export default function FeedbackPage() {
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleAddWrongNote = async () => {
+    if (!answerId) return;
+    setWrongNoteAdding(true);
+    setWrongNoteMessage('');
+    try {
+      const res = await addWrongNoteAPI(Number(answerId));
+      if (res.success) {
+        setWrongNoteMessage('오답 노트에 추가되었습니다.');
+      } else {
+        setWrongNoteMessage(res.message || '추가에 실패했습니다.');
+      }
+    } catch {
+      setWrongNoteMessage('서버에 연결할 수 없습니다.');
+    } finally {
+      setWrongNoteAdding(false);
+      setTimeout(() => setWrongNoteMessage(''), 3000);
+    }
   };
 
   if (loading) {
@@ -150,6 +172,13 @@ export default function FeedbackPage() {
         >
           다시 작성하기
         </Link>
+        <button
+          onClick={handleAddWrongNote}
+          disabled={wrongNoteAdding}
+          className="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg px-6 py-3 font-medium transition-colors disabled:opacity-50"
+        >
+          {wrongNoteAdding ? '추가 중...' : '오답 노트에 추가'}
+        </button>
         <Link
           to="/my/history"
           className="flex-1 text-center bg-indigo-900 hover:bg-indigo-700 text-white rounded-lg px-6 py-3 font-medium transition-colors"
@@ -157,6 +186,11 @@ export default function FeedbackPage() {
           이력 보기
         </Link>
       </div>
+      {wrongNoteMessage && (
+        <p className={`text-sm mt-3 text-center ${wrongNoteMessage.includes('실패') || wrongNoteMessage.includes('연결') ? 'text-red-600' : 'text-emerald-600'}`}>
+          {wrongNoteMessage}
+        </p>
+      )}
     </div>
   );
 }
