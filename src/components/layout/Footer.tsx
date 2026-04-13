@@ -14,13 +14,13 @@ export default function Footer() {
         </div>
         <div className="flex gap-8 items-center">
           <Link
-            to="/"
+            to="/about"
             className="font-body text-xs tracking-wide uppercase text-on-surface-variant/60 hover:text-primary transition-colors"
           >
             서비스 소개
           </Link>
           <a
-            href="https://github.com"
+            href="https://github.com/Leeeydia"
             target="_blank"
             rel="noopener noreferrer"
             className="font-body text-xs tracking-wide uppercase text-on-surface-variant/60 hover:text-primary transition-colors"
