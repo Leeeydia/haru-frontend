@@ -105,13 +105,21 @@ export default function Header() {
             <div className="flex items-center gap-3">
               <Link
                 to="/login"
-                className="hidden sm:block text-on-surface-variant font-medium hover:text-primary transition-colors text-sm"
+                className={
+                  location.pathname === '/login'
+                    ? 'hidden sm:block bg-primary text-on-primary rounded-full px-5 py-2.5 text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95'
+                    : 'hidden sm:block text-on-surface-variant font-medium hover:text-primary transition-colors text-sm'
+                }
               >
                 로그인
               </Link>
               <Link
                 to="/signup"
-                className="bg-primary text-on-primary rounded-full px-5 py-2.5 text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
+                className={
+                  location.pathname === '/login'
+                    ? 'text-on-surface-variant font-medium hover:text-primary transition-colors text-sm'
+                    : 'bg-primary text-on-primary rounded-full px-5 py-2.5 text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95'
+                }
               >
                 시작하기
               </Link>
