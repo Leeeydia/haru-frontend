@@ -17,7 +17,7 @@ const TECH_STACKS_BY_JOB: Record<string, string[]> = {
   풀스택: ['React', 'TypeScript', 'Node.js', 'Java', 'Spring', 'Next.js', 'MySQL', 'PostgreSQL', 'Docker', 'AWS'],
 };
 
-const RECEIVE_HOURS = Array.from({ length: 17 }, (_, i) => i + 6);
+const RECEIVE_HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 const STEP_LABELS = ['직군 선택', '기술 스택', '수신 설정'];
 
@@ -205,7 +205,6 @@ export default function OnboardingPage() {
                   onChange={(e) => setReceiveTime(Number(e.target.value))}
                   className="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
                 >
-                  <option value={-1}>테스트용 (매시간 발송)</option>
                   {RECEIVE_HOURS.map((h) => (
                     <option key={h} value={h}>
                       {h}시

@@ -241,7 +241,6 @@ export default function SettingsPage() {
                 onChange={(e) => setReceiveTime(Number(e.target.value))}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
               >
-                <option value={-1}>테스트용 (매시간 발송)</option>
                 {Array.from({ length: 24 }, (_, i) => (
                   <option key={i} value={i}>
                     {String(i).padStart(2, '0')}:00
