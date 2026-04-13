@@ -31,7 +31,6 @@ export default function OnboardingPage() {
   const [jobCategory, setJobCategory] = useState('');
   const [techStacks, setTechStacks] = useState<string[]>([]);
   const [receiveTime, setReceiveTime] = useState(9);
-  const [dailyQuestionCount, setDailyQuestionCount] = useState(1);
   const [receiveDays, setReceiveDays] = useState('EVERYDAY');
 
   const toggleStack = (stack: string) => {
@@ -53,7 +52,7 @@ export default function OnboardingPage() {
     setError(null);
     setLoading(true);
     try {
-      const res = await saveProfileAPI({ jobCategory, techStacks, receiveTime, dailyQuestionCount, receiveDays, reminderEnabled: true });
+      const res = await saveProfileAPI({ jobCategory, techStacks, receiveTime, dailyQuestionCount: 1, receiveDays, reminderEnabled: true });
       if (res.data.success) {
         setOnboardingCompleted();
         navigate('/dashboard');
@@ -213,33 +212,6 @@ export default function OnboardingPage() {
                     </option>
                   ))}
                 </select>
-              </div>
-
-              {/* Daily question count */}
-              <div className="mb-6">
-                <span className="block text-sm font-semibold text-on-surface mb-2">일일 질문 수</span>
-                <div className="flex gap-3">
-                  {[1, 2, 3].map((n) => (
-                    <label
-                      key={n}
-                      className={`flex-1 text-center rounded-xl border-2 px-4 py-3 cursor-pointer font-bold transition-all ${
-                        dailyQuestionCount === n
-                          ? 'border-primary bg-secondary-container/10 text-primary'
-                          : 'border-surface-container text-on-surface-variant hover:border-outline-variant'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="dailyQuestionCount"
-                        value={n}
-                        checked={dailyQuestionCount === n}
-                        onChange={() => setDailyQuestionCount(n)}
-                        className="sr-only"
-                      />
-                      {n}개
-                    </label>
-                  ))}
-                </div>
               </div>
 
               {/* Receive days */}
