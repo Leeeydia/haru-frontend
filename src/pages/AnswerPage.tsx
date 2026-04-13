@@ -87,8 +87,10 @@ export default function AnswerPage() {
               const draftRes = await getAnswersByDeliveryAPI(res.data.deliveryId);
               if (draftRes.success && draftRes.data && draftRes.data.length > 0) {
                 // 최신 답변이 임시저장이면 복원
-                const latest = draftRes.data[draftRes.data.length - 1];
-                if (!latest.isFinal) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const latest = draftRes.data[draftRes.data.length - 1] as any;
+                const isFinal = latest.isFinal ?? latest.final ?? false;
+                if (!isFinal && latest.content) {
                   setContent(latest.content);
                 }
               }
