@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
 import { getFeedbackAPI } from '../api/feedback';
 import { addWrongNoteAPI } from '../api/wrongNote';
 import { getScoreGrade } from '../utils/format';
@@ -61,8 +62,12 @@ export default function FeedbackPage() {
       } else {
         setWrongNoteMessage(res.message || '추가에 실패했습니다.');
       }
-    } catch {
-      setWrongNoteMessage('서버에 연결할 수 없습니다.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.data?.message) {
+        setWrongNoteMessage(err.response.data.message);
+      } else {
+        setWrongNoteMessage('서버에 연결할 수 없습니다.');
+      }
     } finally {
       setWrongNoteAdding(false);
       setTimeout(() => setWrongNoteMessage(''), 3000);
