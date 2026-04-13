@@ -19,7 +19,7 @@ export default function SignupPage() {
 
   const validate = (): string | null => {
     if (name.trim().length < 2) return '이름은 2자 이상 입력해주세요.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return '올바른 이메일 형식을 입력해주세요.';
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return '올바른 이메일 형식을 입력해주세요. (예: user@example.com)';
     if (password.length < 6) return '비밀번호는 6자 이상 입력해주세요.';
     if (password !== passwordConfirm) return '비밀번호가 일치하지 않습니다.';
     return null;
