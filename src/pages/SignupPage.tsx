@@ -20,7 +20,9 @@ export default function SignupPage() {
   const validate = (): string | null => {
     if (name.trim().length < 2) return '이름은 2자 이상 입력해주세요.';
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return '올바른 이메일 형식을 입력해주세요. (예: user@example.com)';
-    if (password.length < 6) return '비밀번호는 6자 이상 입력해주세요.';
+    if (password.length < 8) return '비밀번호는 8자 이상 입력해주세요.';
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) return '비밀번호에 특수문자를 1개 이상 포함해주세요.';
+    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) return '비밀번호에 영문과 숫자를 모두 포함해주세요.';
     if (password !== passwordConfirm) return '비밀번호가 일치하지 않습니다.';
     return null;
   };
@@ -98,7 +100,7 @@ export default function SignupPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="6자 이상"
+                placeholder="영문 + 숫자 + 특수문자, 8자 이상"
                 className="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
               />
             </div>
