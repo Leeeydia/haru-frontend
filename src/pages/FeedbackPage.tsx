@@ -144,6 +144,24 @@ export default function FeedbackPage() {
         )}
       </div>
 
+      {/* Praise */}
+      {feedback.praise && (
+        <div className="bg-green-50 border border-green-200 rounded-xl px-6 py-5 mb-4">
+          <div className="flex items-start gap-3">
+            <span
+              className="material-symbols-outlined text-green-600 text-xl mt-0.5"
+              style={{ fontVariationSettings: '"FILL" 1' }}
+            >
+              thumb_up
+            </span>
+            <div>
+              <p className="text-sm font-bold text-green-700 mb-1">잘한 점</p>
+              <p className="text-green-800 leading-relaxed whitespace-pre-wrap">{feedback.praise}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Feedback sections */}
       <div className="space-y-3 mb-4">
         {FEEDBACK_SECTIONS.map(({ key, label, icon }) => (
@@ -171,6 +189,24 @@ export default function FeedbackPage() {
           </div>
         ))}
       </div>
+
+      {/* Interviewer comment */}
+      {feedback.interviewerComment && (
+        <div className="bg-surface-container-lowest rounded-xl px-6 py-5 mb-4">
+          <div className="flex items-start gap-3">
+            <span
+              className="material-symbols-outlined text-primary text-xl mt-0.5"
+              style={{ fontVariationSettings: '"FILL" 1' }}
+            >
+              forum
+            </span>
+            <div>
+              <p className="text-sm font-bold text-on-surface mb-1">면접관 한마디</p>
+              <p className="text-on-surface-variant leading-relaxed whitespace-pre-wrap">{feedback.interviewerComment}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Improved answer */}
       <div className="bg-surface-container-lowest rounded-xl mb-8 overflow-hidden">
