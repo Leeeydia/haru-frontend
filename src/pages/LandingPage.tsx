@@ -52,8 +52,9 @@ export default function LandingPage() {
             <span className="text-primary">꾸준한 면접 준비</span>
           </h1>
           <p className="text-lg text-on-surface-variant mb-10 max-w-2xl mx-auto font-medium">
-            하루한답은 매일 면접 질문을 보내고, AI가 답변을 분석해주는
-            개발자 면접 준비 서비스입니다.
+            하루한답은 매일 면접 질문을 보내고,
+            <br />
+            AI가 답변을 분석해주는 개발자 면접 준비 서비스입니다.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
