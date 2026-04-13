@@ -33,9 +33,9 @@ export default {
         "surface-tint": "#4c56af",
       },
       fontFamily: {
-        headline: ["Manrope", "system-ui", "sans-serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
-        label: ["Inter", "system-ui", "sans-serif"],
+        headline: ["Manrope", "Pretendard", "-apple-system", "sans-serif"],
+        body: ["Pretendard", "-apple-system", "sans-serif"],
+        label: ["Pretendard", "-apple-system", "sans-serif"],
       },
     },
   },

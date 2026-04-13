@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Pretendard", -apple-system, sans-serif;
   background-color: #f8fafb;
   color: #191c1d;
 }
