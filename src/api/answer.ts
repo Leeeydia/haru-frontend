@@ -13,6 +13,11 @@ export async function getMyAnswersAPI() {
   return res.data;
 }
 
+export async function getAnswersByDeliveryAPI(deliveryId: number) {
+  const res = await client.get<ApiResponse<Answer[]>>(`/api/answers/delivery/${deliveryId}`);
+  return res.data;
+}
+
 export async function submitAnswerAPI(data: AnswerSubmitRequest) {
   const res = await client.post<ApiResponse<Answer>>('/api/answers', data);
   return res.data;

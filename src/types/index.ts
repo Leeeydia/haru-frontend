@@ -4,6 +4,7 @@ export interface AuthResponse {
   userId: number;
   email: string;
   name: string;
+  onboardingCompleted?: boolean;
 }
 
 export interface SignupRequest {
@@ -97,10 +98,12 @@ export interface Feedback {
   id: number;
   answerId: number;
   totalScore: number;
+  praise: string;
   completeness: string;
   structure: string;
   expression: string;
   specificity: string;
+  interviewerComment: string;
   improvedAnswer: string;
   createdAt: string;
   answerContent: string;

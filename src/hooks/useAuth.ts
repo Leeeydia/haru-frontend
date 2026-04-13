@@ -18,7 +18,7 @@ export function useAuth() {
     try {
       const res = await signupAPI(data);
       if (res.data.success && res.data.data) {
-        contextLogin(res.data.data);
+        contextLogin({ ...res.data.data, onboardingCompleted: false });
         navigate('/onboarding');
       } else {
         setError(res.data.message || '회원가입에 실패했습니다.');
@@ -40,16 +40,26 @@ export function useAuth() {
     try {
       const res = await loginAPI(data);
       if (res.data.success && res.data.data) {
-        contextLogin(res.data.data);
-        try {
-          const profileRes = await getProfileAPI();
-          if (profileRes.data.success && profileRes.data.data) {
-            navigate(returnUrl || '/dashboard');
-          } else {
+        const authData = res.data.data;
+
+        // 백엔드가 onboardingCompleted를 제공하면 그대로 사용
+        if (typeof authData.onboardingCompleted === 'boolean') {
+          contextLogin(authData);
+          navigate(authData.onboardingCompleted ? (returnUrl || '/dashboard') : '/onboarding');
+        } else {
+          // 백엔드가 필드를 아직 안 보내면 프로필 API로 확인
+          contextLogin({ ...authData, onboardingCompleted: false });
+          try {
+            const profileRes = await getProfileAPI();
+            if (profileRes.data.success && profileRes.data.data) {
+              contextLogin({ ...authData, onboardingCompleted: true });
+              navigate(returnUrl || '/dashboard');
+            } else {
+              navigate('/onboarding');
+            }
+          } catch {
             navigate('/onboarding');
           }
-        } catch {
-          navigate('/onboarding');
         }
       } else {
         setError(res.data.message || '로그인에 실패했습니다.');

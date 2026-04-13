@@ -16,7 +16,6 @@ export default function SettingsPage() {
 
   // 프로필 폼 상태
   const [receiveTime, setReceiveTime] = useState(9);
-  const [dailyQuestionCount, setDailyQuestionCount] = useState(1);
   const [receiveDays, setReceiveDays] = useState('EVERYDAY');
   const [reminderEnabled, setReminderEnabled] = useState(true);
 
@@ -27,7 +26,6 @@ export default function SettingsPage() {
           const p = res.data.data;
           setProfile(p);
           setReceiveTime(p.receiveTime);
-          setDailyQuestionCount(p.dailyQuestionCount);
           setReceiveDays(p.receiveDays);
           setReminderEnabled(p.reminderEnabled ?? true);
         }
@@ -49,7 +47,7 @@ export default function SettingsPage() {
         jobCategory: profile.jobCategory,
         techStacks: profile.techStacks,
         receiveTime,
-        dailyQuestionCount,
+        dailyQuestionCount: 1,
         receiveDays,
         reminderEnabled,
       });
@@ -210,7 +208,7 @@ export default function SettingsPage() {
                   jobCategory: profile.jobCategory,
                   techStacks: profile.techStacks,
                   receiveTime,
-                  dailyQuestionCount,
+                  dailyQuestionCount: 1,
                   receiveDays,
                   reminderEnabled: next,
                 });
@@ -248,18 +246,6 @@ export default function SettingsPage() {
                   <option key={i} value={i}>
                     {String(i).padStart(2, '0')}:00
                   </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">일일 질문 수</label>
-              <select
-                value={dailyQuestionCount}
-                onChange={(e) => setDailyQuestionCount(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-              >
-                {[1, 2, 3].map((n) => (
-                  <option key={n} value={n}>{n}개</option>
                 ))}
               </select>
             </div>

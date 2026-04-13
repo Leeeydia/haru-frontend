@@ -13,6 +13,7 @@ import WrongNotesPage from './pages/my/WrongNotesPage';
 import StatsPage from './pages/my/StatsPage';
 import SettingsPage from './pages/SettingsPage';
 import GitHubCallbackPage from './pages/GitHubCallbackPage';
+import AboutPage from './pages/AboutPage';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/answer/:answerToken" element={<AnswerPage />} />
 
         {/* 인증 필요 페이지 */}

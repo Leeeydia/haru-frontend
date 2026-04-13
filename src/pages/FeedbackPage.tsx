@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
 import { getFeedbackAPI } from '../api/feedback';
 import { addWrongNoteAPI } from '../api/wrongNote';
-import { getScoreGrade, getScoreColor } from '../utils/format';
+import { getScoreGrade } from '../utils/format';
 import type { Feedback } from '../types';
 
 const FEEDBACK_SECTIONS = [
-  { key: 'completeness' as const, label: '내용 완성도' },
-  { key: 'structure' as const, label: '답변 구조' },
-  { key: 'expression' as const, label: '표현/말투' },
-  { key: 'specificity' as const, label: '구체성' },
+  { key: 'completeness' as const, label: '내용 완성도', icon: 'check_circle' },
+  { key: 'structure' as const, label: '답변 구조', icon: 'account_tree' },
+  { key: 'expression' as const, label: '표현/말투', icon: 'record_voice_over' },
+  { key: 'specificity' as const, label: '구체성', icon: 'target' },
 ];
 
 export default function FeedbackPage() {
@@ -61,8 +62,12 @@ export default function FeedbackPage() {
       } else {
         setWrongNoteMessage(res.message || '추가에 실패했습니다.');
       }
-    } catch {
-      setWrongNoteMessage('서버에 연결할 수 없습니다.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.data?.message) {
+        setWrongNoteMessage(err.response.data.message);
+      } else {
+        setWrongNoteMessage('서버에 연결할 수 없습니다.');
+      }
     } finally {
       setWrongNoteAdding(false);
       setTimeout(() => setWrongNoteMessage(''), 3000);
@@ -72,71 +77,111 @@ export default function FeedbackPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-indigo-900 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error || !feedback) {
     return (
-      <div className="max-w-3xl mx-auto py-16 px-4 text-center">
-        <p className="text-gray-500">{error || '피드백을 찾을 수 없습니다.'}</p>
+      <div className="max-w-3xl mx-auto py-16 px-6 text-center">
+        <span className="material-symbols-outlined text-4xl text-on-surface-variant/30 mb-3">error_outline</span>
+        <p className="text-on-surface-variant font-medium">{error || '피드백을 찾을 수 없습니다.'}</p>
       </div>
     );
   }
 
   const grade = getScoreGrade(feedback.totalScore);
-  const scoreColor = getScoreColor(feedback.totalScore);
 
   return (
-    <div className="max-w-3xl mx-auto py-10 px-4">
-      {/* 종합 점수 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center mb-6">
-        <p className="text-gray-500 text-sm mb-2">종합 점수</p>
-        <div className="flex items-center justify-center gap-4">
-          <span className={`text-5xl font-bold ${scoreColor}`}>{feedback.totalScore}</span>
-          <span className="text-gray-400 text-2xl">/</span>
-          <span className="text-gray-400 text-2xl">100</span>
+    <div className="max-w-3xl mx-auto py-8 px-6">
+      {/* Score card */}
+      <div className="bg-primary text-on-primary rounded-xl p-8 text-center mb-6 relative overflow-hidden">
+        <div className="absolute -right-4 -bottom-4 opacity-10">
+          <span className="material-symbols-outlined text-[120px]" style={{ fontVariationSettings: '"FILL" 1' }}>
+            grade
+          </span>
         </div>
-        <div className={`inline-block mt-3 text-2xl font-bold ${scoreColor}`}>
-          {grade}등급
+        <div className="relative z-10">
+          <span className="text-on-primary/60 font-bold uppercase tracking-widest text-xs">
+            Total Score
+          </span>
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <span className="text-6xl font-headline font-extrabold tracking-tighter">
+              {feedback.totalScore}
+            </span>
+            <span className="text-on-primary/40 text-2xl font-bold">/100</span>
+          </div>
+          <div className="mt-3">
+            <span className="bg-on-primary/20 text-on-primary px-4 py-1 rounded-full text-sm font-bold">
+              {grade}등급
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* 내 답변 원문 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+      {/* My answer */}
+      <div className="bg-surface-container-lowest rounded-xl mb-4 overflow-hidden">
         <button
           type="button"
           onClick={() => setShowAnswer(!showAnswer)}
-          className="w-full flex items-center justify-between px-6 py-4 text-left"
+          className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-surface-container-low transition-colors"
         >
-          <span className="font-medium text-gray-900">내 답변 원문</span>
-          <span className="text-gray-400 text-sm">{showAnswer ? '접기' : '펼치기'}</span>
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-on-surface-variant">description</span>
+            <span className="font-bold text-on-surface">내 답변 원문</span>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant transition-transform" style={{ transform: showAnswer ? 'rotate(180deg)' : 'none' }}>
+            expand_more
+          </span>
         </button>
         {showAnswer && (
-          <div className="px-6 pb-6 border-t border-gray-100 pt-4">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+          <div className="px-6 pb-6 border-t border-surface-container pt-4">
+            <p className="text-on-surface-variant leading-relaxed whitespace-pre-wrap">
               {feedback.answerContent}
             </p>
           </div>
         )}
       </div>
 
-      {/* 항목별 피드백 */}
-      <div className="space-y-4 mb-6">
-        {FEEDBACK_SECTIONS.map(({ key, label }) => (
-          <div key={key} className="bg-white rounded-xl shadow-sm border border-gray-200">
+      {/* Praise */}
+      {feedback.praise && (
+        <div className="bg-green-50 border border-green-200 rounded-xl px-6 py-5 mb-4">
+          <div className="flex items-start gap-3">
+            <span
+              className="material-symbols-outlined text-green-600 text-xl mt-0.5"
+              style={{ fontVariationSettings: '"FILL" 1' }}
+            >
+              thumb_up
+            </span>
+            <div>
+              <p className="text-sm font-bold text-green-700 mb-1">잘한 점</p>
+              <p className="text-green-800 leading-relaxed whitespace-pre-wrap">{feedback.praise}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback sections */}
+      <div className="space-y-3 mb-4">
+        {FEEDBACK_SECTIONS.map(({ key, label, icon }) => (
+          <div key={key} className="bg-surface-container-lowest rounded-xl overflow-hidden">
             <button
               type="button"
               onClick={() => toggleSection(key)}
-              className="w-full flex items-center justify-between px-6 py-4 text-left"
+              className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-surface-container-low transition-colors"
             >
-              <span className="font-medium text-gray-900">{label}</span>
-              <span className="text-gray-400 text-sm">{openSections[key] ? '접기' : '펼치기'}</span>
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary">{icon}</span>
+                <span className="font-bold text-on-surface">{label}</span>
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant transition-transform" style={{ transform: openSections[key] ? 'rotate(180deg)' : 'none' }}>
+                expand_more
+              </span>
             </button>
             {openSections[key] && (
-              <div className="px-6 pb-6 border-t border-gray-100 pt-4">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+              <div className="px-6 pb-6 border-t border-surface-container pt-4">
+                <p className="text-on-surface-variant leading-relaxed whitespace-pre-wrap">
                   {feedback[key]}
                 </p>
               </div>
@@ -145,49 +190,72 @@ export default function FeedbackPage() {
         ))}
       </div>
 
-      {/* 모범 답변 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+      {/* Interviewer comment */}
+      {feedback.interviewerComment && (
+        <div className="bg-surface-container-lowest rounded-xl px-6 py-5 mb-4">
+          <div className="flex items-start gap-3">
+            <span
+              className="material-symbols-outlined text-primary text-xl mt-0.5"
+              style={{ fontVariationSettings: '"FILL" 1' }}
+            >
+              forum
+            </span>
+            <div>
+              <p className="text-sm font-bold text-on-surface mb-1">면접관 한마디</p>
+              <p className="text-on-surface-variant leading-relaxed whitespace-pre-wrap">{feedback.interviewerComment}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Improved answer */}
+      <div className="bg-surface-container-lowest rounded-xl mb-8 overflow-hidden">
         <button
           type="button"
           onClick={() => setShowImproved(!showImproved)}
-          className="w-full flex items-center justify-between px-6 py-4 text-left"
+          className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-surface-container-low transition-colors"
         >
-          <span className="font-medium text-gray-900">모범 답변 예시</span>
-          <span className="text-gray-400 text-sm">{showImproved ? '접기' : '펼치기'}</span>
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary">auto_awesome</span>
+            <span className="font-bold text-on-surface">모범 답변 예시</span>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant transition-transform" style={{ transform: showImproved ? 'rotate(180deg)' : 'none' }}>
+            expand_more
+          </span>
         </button>
         {showImproved && (
-          <div className="px-6 pb-6 border-t border-gray-100 pt-4">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+          <div className="px-6 pb-6 border-t border-surface-container pt-4">
+            <p className="text-on-surface-variant leading-relaxed whitespace-pre-wrap">
               {feedback.improvedAnswer}
             </p>
           </div>
         )}
       </div>
 
-      {/* 하단 버튼 */}
-      <div className="flex gap-3">
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row gap-3">
         <Link
           to={`/answer/${feedback.answerToken}`}
-          className="flex-1 text-center bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg px-6 py-3 font-medium transition-colors"
+          className="flex-1 text-center bg-surface-container-low text-on-surface-variant hover:bg-surface-container rounded-full px-6 py-3.5 font-bold transition-colors"
         >
           다시 작성하기
         </Link>
         <button
           onClick={handleAddWrongNote}
           disabled={wrongNoteAdding}
-          className="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg px-6 py-3 font-medium transition-colors disabled:opacity-50"
+          className="flex-1 bg-surface-container-low text-on-surface-variant hover:bg-surface-container rounded-full px-6 py-3.5 font-bold transition-colors disabled:opacity-50"
         >
           {wrongNoteAdding ? '추가 중...' : '오답 노트에 추가'}
         </button>
         <Link
           to="/my/history"
-          className="flex-1 text-center bg-indigo-900 hover:bg-indigo-700 text-white rounded-lg px-6 py-3 font-medium transition-colors"
+          className="flex-1 text-center bg-primary text-on-primary rounded-full px-6 py-3.5 font-bold shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
         >
           이력 보기
         </Link>
       </div>
       {wrongNoteMessage && (
-        <p className={`text-sm mt-3 text-center ${wrongNoteMessage.includes('실패') || wrongNoteMessage.includes('연결') ? 'text-red-600' : 'text-emerald-600'}`}>
+        <p className={`text-sm mt-3 text-center font-medium ${wrongNoteMessage.includes('실패') || wrongNoteMessage.includes('연결') ? 'text-error' : 'text-green-600'}`}>
           {wrongNoteMessage}
         </p>
       )}
