@@ -134,8 +134,14 @@ export default function AnswerPage() {
           setContent('');
           navigate(`/feedback/${res.data.id}`);
         } else {
-          // 임시저장 목록에 추가
-          setDrafts((prev) => [...prev, res.data!]);
+          // 임시저장 목록 갱신 (같은 id면 교체, 새 id면 추가)
+          setDrafts((prev) => {
+            const exists = prev.some((d) => d.id === res.data!.id);
+            if (exists) {
+              return prev.map((d) => (d.id === res.data!.id ? res.data! : d));
+            }
+            return [...prev, res.data!];
+          });
           setSaved(true);
           setTimeout(() => setSaved(false), 2000);
         }
