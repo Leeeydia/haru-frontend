@@ -2,15 +2,23 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import { getToken, setToken as saveToken, removeToken } from '../utils/token';
 import type { AuthResponse } from '../types';
 
+interface AuthUser {
+  userId: number;
+  email: string;
+  name: string;
+  onboardingCompleted: boolean;
+}
+
 interface AuthState {
   token: string | null;
-  user: Omit<AuthResponse, 'token'> | null;
+  user: AuthUser | null;
 }
 
 interface AuthContextType extends AuthState {
   loading: boolean;
   login: (data: AuthResponse) => void;
   logout: () => void;
+  setOnboardingCompleted: () => void;
   isAuthenticated: boolean;
 }
 
@@ -29,7 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loading = false;
 
   const login = (data: AuthResponse) => {
-    const { token, ...user } = data;
+    const { token, userId, email, name, onboardingCompleted } = data;
+    const user: AuthUser = { userId, email, name, onboardingCompleted: onboardingCompleted ?? false };
     saveToken(token);
     localStorage.setItem('haru_user', JSON.stringify(user));
     setAuthState({ token, user });
@@ -41,6 +50,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthState({ token: null, user: null });
   };
 
+  const setOnboardingCompleted = () => {
+    setAuthState((prev) => {
+      if (!prev.user) return prev;
+      const updated = { ...prev.user, onboardingCompleted: true };
+      localStorage.setItem('haru_user', JSON.stringify(updated));
+      return { ...prev, user: updated };
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -48,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         login,
         logout,
+        setOnboardingCompleted,
         isAuthenticated: !!authState.token,
       }}
     >

@@ -4,6 +4,7 @@ export interface AuthResponse {
   userId: number;
   email: string;
   name: string;
+  onboardingCompleted?: boolean;
 }
 
 export interface SignupRequest {

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../contexts/AuthContext';
 import { saveProfileAPI } from '../api/profile';
 
 const JOB_CATEGORIES = ['프론트엔드', '백엔드', '풀스택'] as const;
@@ -22,6 +23,7 @@ const STEP_LABELS = ['직군 선택', '기술 스택', '수신 설정'];
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const { setOnboardingCompleted } = useAuthContext();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +55,7 @@ export default function OnboardingPage() {
     try {
       const res = await saveProfileAPI({ jobCategory, techStacks, receiveTime, dailyQuestionCount, receiveDays, reminderEnabled: true });
       if (res.data.success) {
+        setOnboardingCompleted();
         navigate('/dashboard');
       } else {
         setError(res.data.message || '프로필 저장에 실패했습니다.');
