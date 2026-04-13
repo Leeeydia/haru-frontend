@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
-import { getQuestionByTokenAPI, getAnswerByDeliveryAPI, submitAnswerAPI } from '../api/answer';
+import { getQuestionByTokenAPI, getAnswersByDeliveryAPI, submitAnswerAPI } from '../api/answer';
 import type { QuestionDetail } from '../types';
 
 const ANALYSIS_MESSAGES = [
@@ -84,9 +84,13 @@ export default function AnswerPage() {
           // 임시저장된 답변이 있으면 불러오기
           if (isAuthenticated) {
             try {
-              const draftRes = await getAnswerByDeliveryAPI(res.data.deliveryId);
-              if (draftRes.success && draftRes.data && !draftRes.data.isFinal) {
-                setContent(draftRes.data.content);
+              const draftRes = await getAnswersByDeliveryAPI(res.data.deliveryId);
+              if (draftRes.success && draftRes.data && draftRes.data.length > 0) {
+                // 최신 답변이 임시저장이면 복원
+                const latest = draftRes.data[draftRes.data.length - 1];
+                if (!latest.isFinal) {
+                  setContent(latest.content);
+                }
               }
             } catch {
               // 임시저장 답변이 없으면 무시

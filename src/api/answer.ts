@@ -13,8 +13,8 @@ export async function getMyAnswersAPI() {
   return res.data;
 }
 
-export async function getAnswerByDeliveryAPI(deliveryId: number) {
-  const res = await client.get<ApiResponse<Answer>>(`/api/answers/delivery/${deliveryId}`);
+export async function getAnswersByDeliveryAPI(deliveryId: number) {
+  const res = await client.get<ApiResponse<Answer[]>>(`/api/answers/delivery/${deliveryId}`);
   return res.data;
 }
 
