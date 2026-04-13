@@ -32,9 +32,9 @@ export async function connectGitHubAPI(): Promise<ApiResponse<{ authUrl: string 
   }
 }
 
-export async function callbackGitHubAPI(code: string): Promise<ApiResponse<null>> {
+export async function callbackGitHubAPI(code: string, state: string): Promise<ApiResponse<null>> {
   try {
-    const res = await client.post<ApiResponse<null>>('/api/github/callback', { code });
+    const res = await client.post<ApiResponse<null>>('/api/github/callback', { code, state });
     return res.data;
   } catch {
     // TODO: 백엔드 완성 시 실제 API로 교체

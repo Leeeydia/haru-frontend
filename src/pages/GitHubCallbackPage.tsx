@@ -9,12 +9,13 @@ export default function GitHubCallbackPage() {
 
   useEffect(() => {
     const code = searchParams.get('code');
-    if (!code) {
-      setError('GitHub 인증 코드가 없습니다.');
+    const state = searchParams.get('state');
+    if (!code || !state) {
+      setError('GitHub 인증 정보가 올바르지 않습니다.');
       return;
     }
 
-    callbackGitHubAPI(code)
+    callbackGitHubAPI(code, state)
       .then((res) => {
         if (res.success) {
           navigate('/settings', { replace: true });
