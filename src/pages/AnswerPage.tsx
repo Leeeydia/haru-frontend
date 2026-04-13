@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
-import { getQuestionByTokenAPI, submitAnswerAPI } from '../api/answer';
+import { getQuestionByTokenAPI, getAnswerByDeliveryAPI, submitAnswerAPI } from '../api/answer';
 import type { QuestionDetail } from '../types';
 
 const ANALYSIS_MESSAGES = [
@@ -78,9 +78,20 @@ export default function AnswerPage() {
     if (!answerToken) return;
     setLoadingQuestion(true);
     getQuestionByTokenAPI(answerToken)
-      .then((res) => {
+      .then(async (res) => {
         if (res.success && res.data) {
           setQuestion(res.data);
+          // 임시저장된 답변이 있으면 불러오기
+          if (isAuthenticated) {
+            try {
+              const draftRes = await getAnswerByDeliveryAPI(res.data.deliveryId);
+              if (draftRes.success && draftRes.data && !draftRes.data.isFinal) {
+                setContent(draftRes.data.content);
+              }
+            } catch {
+              // 임시저장 답변이 없으면 무시
+            }
+          }
         } else {
           setError('질문을 불러올 수 없습니다.');
         }
@@ -89,7 +100,7 @@ export default function AnswerPage() {
         setError('서버에 연결할 수 없습니다.');
       })
       .finally(() => setLoadingQuestion(false));
-  }, [answerToken]);
+  }, [answerToken, isAuthenticated]);
 
   const handleSubmit = async (isFinal: boolean) => {
     if (isFinal && !isAuthenticated) {
@@ -118,6 +129,7 @@ export default function AnswerPage() {
       const res = await submitAnswerAPI({ deliveryId: question.deliveryId, content, isFinal });
       if (res.success && res.data) {
         if (isFinal) {
+          setContent('');
           navigate(`/feedback/${res.data.id}`);
         } else {
           setSaved(true);
