@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { getMyAnswersAPI } from '../api/answer';
 import { getGitHubStatusAPI } from '../api/github';
@@ -8,6 +8,7 @@ import { formatDate, getScoreColor } from '../utils/format';
 
 export default function DashboardPage() {
   const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [answers, setAnswers] = useState<AnswerHistory[]>([]);
   const [githubStatus, setGithubStatus] = useState<GitHubStatus | null>(null);
   const [githubBannerDismissed, setGithubBannerDismissed] = useState(false);
@@ -140,7 +141,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Total count */}
-        <div className="bg-surface-container-lowest rounded-xl p-6 flex flex-col justify-center border-b-2 border-primary/5">
+        <div
+          onClick={() => navigate('/my/history')}
+          className="bg-surface-container-lowest rounded-xl p-6 flex flex-col justify-center border-b-2 border-primary/5 cursor-pointer hover:bg-surface-container-low transition-colors"
+        >
           <span className="text-on-surface-variant text-sm font-semibold uppercase tracking-wider">
             Total Count
           </span>
