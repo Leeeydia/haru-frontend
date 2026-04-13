@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { getQuestionByTokenAPI, getAnswersByDeliveryAPI, submitAnswerAPI } from '../api/answer';
-import type { QuestionDetail } from '../types';
+import type { QuestionDetail, Answer } from '../types';
 
 const ANALYSIS_MESSAGES = [
   'AI가 답변을 분석하고 있습니다',
@@ -68,6 +68,7 @@ export default function AnswerPage() {
 
   const [question, setQuestion] = useState<QuestionDetail | null>(null);
   const [content, setContent] = useState('');
+  const [drafts, setDrafts] = useState<Answer[]>([]);
   const [loadingQuestion, setLoadingQuestion] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
@@ -81,18 +82,13 @@ export default function AnswerPage() {
       .then(async (res) => {
         if (res.success && res.data) {
           setQuestion(res.data);
-          // 임시저장된 답변이 있으면 불러오기
+          // 임시저장 목록 불러오기
           if (isAuthenticated) {
             try {
               const draftRes = await getAnswersByDeliveryAPI(res.data.deliveryId);
               if (draftRes.success && draftRes.data && draftRes.data.length > 0) {
-                // 최신 답변이 임시저장이면 복원
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const latest = draftRes.data[draftRes.data.length - 1] as any;
-                const isFinal = latest.isFinal ?? latest.final ?? false;
-                if (!isFinal && latest.content) {
-                  setContent(latest.content);
-                }
+                const savedDrafts = draftRes.data.filter((a) => !a.isFinal);
+                setDrafts(savedDrafts);
               }
             } catch {
               // 임시저장 답변이 없으면 무시
@@ -138,6 +134,8 @@ export default function AnswerPage() {
           setContent('');
           navigate(`/feedback/${res.data.id}`);
         } else {
+          // 임시저장 목록에 추가
+          setDrafts((prev) => [...prev, res.data!]);
           setSaved(true);
           setTimeout(() => setSaved(false), 2000);
         }
@@ -209,6 +207,51 @@ export default function AnswerPage() {
           <div className="bg-green-600/10 text-green-700 text-sm rounded-lg px-4 py-3 mb-4 font-medium flex items-center gap-2">
             <span className="material-symbols-outlined text-base">check_circle</span>
             임시 저장되었습니다.
+          </div>
+        )}
+
+        {/* Draft list */}
+        {drafts.length > 0 && (
+          <div className="bg-surface-container-lowest rounded-xl p-5 mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span
+                className="material-symbols-outlined text-on-surface-variant text-lg"
+                style={{ fontVariationSettings: '"FILL" 1' }}
+              >
+                history
+              </span>
+              <span className="text-sm font-semibold text-on-surface">임시저장 목록</span>
+              <span className="text-xs text-on-surface-variant/60 ml-auto">{drafts.length}개</span>
+            </div>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {[...drafts].reverse().map((draft) => (
+                <button
+                  key={draft.id}
+                  type="button"
+                  onClick={() => setContent(draft.content)}
+                  className="w-full text-left bg-surface-container-low hover:bg-surface-container rounded-lg px-4 py-3 transition-colors group"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-on-surface-variant/60">
+                      {new Date(draft.submittedAt).toLocaleString('ko-KR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                    <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                      불러오기
+                    </span>
+                  </div>
+                  <p className="text-sm text-on-surface truncate">
+                    {draft.content.length > 50
+                      ? draft.content.slice(0, 50) + '…'
+                      : draft.content}
+                  </p>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
